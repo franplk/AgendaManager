@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>注册</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css" />
+</head>
+<body>
+<div class="aui-content">
+	<div class="aui-form">
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-mobilefill aui-text-info"></i>
+			<input type="number" class="aui-input" name="username" placeholder="手机号" validate="required" errorMsg="手机号不能为空"/>
+		</div>
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-lock aui-text-info"></i>
+			<input type="password" class="aui-input" name="password" placeholder="输入密码" validate="required" errorMsg="登录密码不能为空"/>
+		</div>
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-lock aui-text-info"></i>
+			<input type="password" class="aui-input" name="confirmPass" placeholder="确认密码" validate="required" errorMsg="请确认密码"/>
+		</div>
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-send aui-text-info"></i>
+			<input type="email" class="aui-input" name="email" placeholder="您的邮箱" validate="required" errorMsg="邮箱不能为空"/>
+		</div>
+		<div class="aui-btn-row">
+			<div class="aui-btn aui-btn-warning" tapmode onclick="doRegister()">
+				点击注册
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js" ></script>
+<script type="text/javascript" src="../../script/com/form.js" ></script>
+<script type="text/javascript">
+window.apiready = function() {
+	api.parseTapmode();
+};
+
+var doRegister = function () {
+	// Form 表单验证
+	var errorMsg = $form.validateForm("input");
+	if (errorMsg) {
+		api.toast({msg:errorMsg});
+		return;
+	}
+	var user = api.require('user');
+	var formData = $form.getFormData();
+	user.register(formData, function(ret,err){
+    	if (err) {
+    		return;
+    	}
+		api.confirm({
+			title : '提示',
+			msg : "恭喜您，注册成功" + JSON.stringify(ret),
+			buttons : ['去登陆', '编辑资料']
+		}, function(ret, err) {
+			if (ret.buttonIndex == 1) {
+				toLogin();
+			} else if (ret.buttonIndex == 2) {
+				stepNext();
+			}
+		});
+    });
+};
+
+// 补充个人资料
+function stepNext() {
+	api.setFrameGroupIndex({
+		name : 'register_frame',
+		index : 1,
+		scroll : false
+	});
+};
+
+// 注册完成，直接登录
+function toLogin () {
+	api.openWin({
+        name: 'login',
+        url: 'widget://html/login.html'
+    });
+}
+</script>
+</html>

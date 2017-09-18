@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>日程详情</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css"/>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+	<a class="aui-pull-left" onclick="api.closeWin();">
+		<span class="aui-iconfont aui-icon-left"></span>
+	</a>
+	<div class="aui-title">日程详情</div>
+	<a class="aui-pull-right" onclick="toEditPage()">
+		<span class="aui-iconfont aui-icon-edit"></span>
+	</a>
+</header>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript" src="../../script/com/form.js"></script>
+<script type="text/javascript" src="../../script/com/date.js"></script>
+<script type="text/javascript">
+var formData = {};
+window.apiready = function() {
+	// 状态栏
+	var header = $api.byId("aui-header");
+	$api.fixStatusBar(header);
+    
+    // 点击延迟消除
+	api.parseTapmode();
+	
+	// 打开主页
+	var headerPos = $api.offset(header);
+	api.openFrame({
+		name: 'detail_frm',
+		url: 'widget://html/uicalendar/detail_frame.html',
+		bounces: true,
+		rect: {
+			x: 0, y: headerPos.h, w: 'auto', h: 'auto'
+		},
+		pageParam: api.pageParam
+	});
+};
+
+// 进入编辑窗口
+var toEditPage = function () {
+	formData.action = "edit";
+	api.openWin({
+	    name: 'cal_edit',
+	    pageParam: formData,
+	    url: 'widget://html/uicalendar/add.html'
+    });
+};
+</script>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>日程详情</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css"/>
+</head>
+<body>
+<div class="aui-content">
+<div class="aui-form">
+	<input type="hidden" name="id" />
+	<div class="aui-input-row">
+		<label class="aui-input-addon">日程等级：</label>
+		<div class="aui-pull-right">
+			<input class="aui-radio" type="radio" name="level" value="blue" checked>
+			<div class="aui-radio-name">一般</div>
+			<input class="aui-radio" type="radio" name="level" value="orange">
+			<div class="aui-radio-name">重要</div>
+			<input class="aui-radio" type="radio" name="level" value="red">
+			<div class="aui-radio-name">紧急</div>
+		</div>
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">日程标题：</label>
+		<input class="aui-input" type="text" name="title" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">是否全天：</label>
+		<div class="aui-pull-right">
+			<input type="checkbox" class="aui-switch" name="allDay">
+		</div>
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">开始日期：</label>
+		<input type="date" class="aui-input" name="s_date" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">开始时间：</label>
+		<input type="time" class="aui-input" name="s_time" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">结束日期：</label>
+		<input type="date" class="aui-input" name="e_date" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">结束时间：</label>
+		<input type="time" class="aui-input" name="e_time" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">计划人员：</label>
+		<input type="text" class="aui-input" name="createUser"/>
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">执行人员：</label>
+		<input type="text" class="aui-input" name="executor"/>
+	</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript" src="../../script/com/form.js"></script>
+<script type="text/javascript" src="../../script/com/date.js"></script>
+<script type="text/javascript">
+var formData = {};
+window.apiready = function() {
+	var params = api.pageParam;
+	if (params) {
+		formData.id = params.id;
+		formData.level = params.level;
+		formData.title = params.title;
+		formData.allDay = params.allDay;
+		formData.createUser = params.createUser;
+		formData.executor = params.executor;
+		
+		// 时间格式转换
+		var startDate = new Date(params.startDate);
+		var endDate = new Date(params.startDate);
+		var dateStr_now = $date.getDateAndTimeStr("yyyy-MM-dd@hh:mm", "@", startDate);
+		var dateStr_next = $date.getDateAndTimeStr("yyyy-MM-dd@hh:mm", "@", endDate);
+		formData.s_date = dateStr_now["dateStr"];
+		formData.s_time = dateStr_now["timeStr"];
+		formData.e_date = dateStr_next["dateStr"];
+		formData.e_time = dateStr_next["timeStr"];
+		
+		// 设定表单数据
+		$form.setFormData(formData);
+	}
+	$form.setFormDisabled(true);
+};
+
+var toEditPage = function () {
+	formData.action = "edit";
+	api.openWin({
+	    name: 'cal_edit',
+	    pageParam: formData,
+	    url: 'widget://html/uicalendar/add.html'
+    });
+};
+</script>
+</html>

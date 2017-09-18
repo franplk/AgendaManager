@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>新建日程</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui-win.css"/>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+		<a class="aui-pull-left" onclick="closeWin()">
+			<span class="aui-iconfont aui-icon-close"></span>
+		</a>
+		<div class="aui-title" id="headerTitle">新建日程</div>
+		<a class="aui-pull-right" onclick="execCalendarAdd()">
+			<span class="aui-iconfont aui-icon-check"></span>
+		</a>
+	</header>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript">
+// 页面就绪事件
+window.apiready = function() {
+	
+	// 设定状态栏Padding
+	var header = $api.byId('aui-header');
+	$api.fixStatusBar(header);
+    
+    // 点击延迟消除
+	api.parseTapmode();
+	
+	// 判定是编辑还是添加
+	var params = api.pageParam;
+	var action = params.action;
+	action || (action = "add");
+	if ("edit" == action) {
+		$api.byId("headerTitle").innerHtml = "编辑日程";
+	}
+	
+	// 打开主页
+	var headerPos = $api.offset(header);
+	api.openFrame({
+		name: 'add_frm',
+		url: 'widget://html/uicalendar/add_frame.html',
+		bounces: true,
+		rect: {
+			x: 0, y: headerPos.h, w: 'auto', h: 'auto'
+		},
+		pageParam: params
+	});
+};
+
+var execCalendarAdd = function () {
+	api.execScript({
+		frameName: 'add_frm',
+	    script: 'toAddCalendar();'
+    });
+};
+
+// 关闭当前窗口事件
+var closeWin = function () {
+	api.confirm({
+		title : '警告',
+		msg : "确定放弃当前编辑？",
+		buttons : ['确定', '取消']
+	}, function(ret, err) {
+		if (ret.buttonIndex == 1) {
+			api.closeWin();
+		}
+	});
+};
+</script>
+</html>

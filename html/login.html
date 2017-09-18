@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>APP</title>
+	<link rel="stylesheet" type="text/css" href="../aui/css/aui.css" />
+	<style>
+		#appLogo {
+			height:100px;
+		}
+		.labelspan {
+			margin-right: 20px;
+			margin-left: 20px
+		}
+		.aui-login {
+			margin-bottom: 15px;
+		}
+		.aui-btn-block {
+			padding:5px 0; border-radius:20px;
+		}
+	</style>
+</head>
+<body>
+<div class="aui-content" id="appLogo">
+	<p class="aui-text-center">LOGO</p>
+</div>
+<div class="aui-card">
+	<div class="aui-form">
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-people"></i>
+			<input class="aui-input" type="number" name="username" placeholder="手机号" validate="required" errorMsg="手机号不能为空"/>
+		</div>
+		<div class="aui-input-row">
+			<i class="aui-input-addon aui-iconfont aui-icon-lock"></i>
+			<input class="aui-input" type="password" name="password" placeholder="输入口令" validate="required" errorMsg="口令不能为空"/>
+		</div>
+		<div class="aui-input-row">
+			<label class="aui-input-addon">记住我</label>
+			<input class="aui-pull-right aui-checkbox" type="checkbox" name="isSaveUser">
+		</div>
+	</div>
+</div>
+<div class="aui-login">
+	<div class="aui-btn aui-btn-primary aui-btn-block" tapmode onclick="toLogin()">
+		登录
+	</div>
+</div>
+<div class="aui-content" style="height:16px;">
+	<p class="aui-text-center aui-text-primary">
+		<label class="register" tapmode onclick="register()">立即注册</label>
+		<label class="labelspan">|</label>
+		<label class="pwsdlose" tapmode onclick="pwsdlose()">忘记密码</label>
+	</p>
+</div>
+<div class="aui-content" id="appLogo">
+	<p class="aui-text-center">----------第三方登陆----------</p>
+</div>
+</body>
+<script type="text/javascript" src="../aui/script/api.js"></script>
+<script type="text/javascript" src="../script/com/form.js"></script>
+<script type="text/javascript">
+
+window.apiready = function() {
+	var header = $api.byId('aui-header');
+	$api.fixStatusBar(header);
+	api.parseTapmode();
+	
+	// 获取之前的登录信息，自动登录
+	api.getPrefs({
+	    key:'loginInfo'
+    }, function(ret, err) {
+    	if (ret && ret.value) {
+	    	var formData = JSON.parse(ret.value);
+	    	formData.isSaveUser = false;
+	    	doLogin(formData);
+    	}
+    });
+};
+
+var toLogin = function () {
+	// Form 表单验证
+	var errorMsg = $form.validateForm("input");
+	if (errorMsg) {
+		api.toast({msg:errorMsg});
+		return;
+	}
+	
+	// 登录
+	var formData = $form.getFormData();
+	doLogin(formData);
+};
+
+// 登录验证
+var doLogin = function (formData) {
+	var user = api.require('user');
+	api.showProgress({
+		title : "登录中...",
+		text : "马上进入"
+    });
+	user.login(formData, function(ret,err){
+		api.hideProgress();
+		if(err) {
+			api.toast({
+	            msg:JSON.stringify(err)
+            });
+            return;
+		}
+		
+		// 将用户数据保存到本地
+		saveLoginInfo(formData);
+		
+		// 登陆验证成功，进入主页
+		api.openWin({
+			name : 'app_index',
+			url : 'widget://index.html',
+			pageParam : {
+				username : formData.username
+			}
+		});
+	});
+};
+
+// 保存用户信息，便于下次自动登陆
+var saveLoginInfo = function (formData) {
+	var isSave = formData.isSaveUser;
+	if (isSave) {
+		api.setPrefs({
+			key : 'loginInfo',
+			value : JSON.stringify(formData)
+		});
+	} else {
+		api.removePrefs({
+            key:'loginInfo'
+        });
+	}
+};
+
+var register = function () {
+	api.openWin({
+		name : 'user_register',
+		url : 'widget://html/user/register_index.html'
+	});
+};
+
+var pwsdlose = function () {
+	api.openWin({
+		name : 'user_forgetPass',
+		url : 'widget://html/user/getBackPassword.html'
+	});
+};
+</script>
+</html>

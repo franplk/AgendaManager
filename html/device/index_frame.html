@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css" />
+</head>
+<body>
+<div class="aui-content">
+	<ul class="aui-list-view">
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				引擎版本
+				<span class="aui-badge aui-badge-info" infoName="version"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				系统类型
+				<span class="aui-badge aui-badge-info" infoName="systemType"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				系统版本
+				<span class="aui-badge aui-badge-info" infoName="systemVersion"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				设备标识
+				<span class="aui-badge aui-badge-info" infoName="deviceId"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				设备型号
+				<span class="aui-badge aui-badge-info" infoName="deviceModel"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				设备名称
+				<span class="aui-badge aui-badge-info" infoName="deviceName"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				网络状态
+				<span class="aui-badge aui-badge-info" infoName="connectionType"></span>
+			</a>
+		</li>
+	</ul>
+	<p>窗口相关</p>
+	<ul class="aui-list-view">
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				主窗口名字
+				<span class="aui-badge aui-badge-info" infoName="winName"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				主窗口高度
+				<span class="aui-badge aui-badge-info" infoName="winHeight"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				主窗口宽度
+				<span class="aui-badge aui-badge-info" infoName="winWidth"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				子窗口名称
+				<span class="aui-badge aui-badge-info" infoName="frameName"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				子窗口高度
+				<span class="aui-badge aui-badge-info" infoName="frameHeight"></span>
+			</a>
+		</li>
+		<li class="aui-list-view-cell">
+			<a class="aui-arrow-right">
+				子窗口宽度
+				<span class="aui-badge aui-badge-info" infoName="frameWidth"></span>
+			</a>
+		</li>
+	</ul>
+</div>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript">
+window.apiready = function() {
+	
+	api.parseTapmode();
+	
+	var infoSpanArr = $api.domAll("span.aui-badge");
+	for (var idx in infoSpanArr) {
+		var elItem = infoSpanArr[idx];
+		var infoName = $api.attr(elItem, "infoName");
+		elItem.innerHTML = api[infoName];
+	}
+};
+</script>
+</html>

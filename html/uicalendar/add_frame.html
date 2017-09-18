@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>新建日程</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css"/>
+</head>
+<body>
+<div class="aui-card">
+<div class="aui-form">
+	<div class="aui-input-row">
+		<label class="aui-input-addon">日程等级：</label>
+		<div class="aui-pull-right">
+			<input class="aui-radio" type="radio" name="level" value="blue" checked>
+			<div class="aui-radio-name">一般</div>
+			<input class="aui-radio" type="radio" name="level" value="orange">
+			<div class="aui-radio-name">重要</div>
+			<input class="aui-radio" type="radio" name="level" value="red">
+			<div class="aui-radio-name">紧急</div>
+		</div>
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">日程标题：</label>
+		<input type="text" class="aui-input" name="title" validate="required" errorMsg="标题不能为空" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">是否全天：</label>
+		<div class="aui-pull-right">
+			<input type="checkbox" class="aui-switch" name="allDay" onclick="typeChange(this)">
+		</div>
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">开始日期：</label>
+		<input type="date" class="aui-input" name="s_date" validate="required" errorMsg="请选择开始日期" />
+	</div>
+	<div class="aui-input-row time">
+		<label class="aui-input-addon">开始时间：</label>
+		<input type="time" class="aui-input" name="s_time" validate="relyon" relyon="allDay" errorMsg="请选择开始时间" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">结束日期：</label>
+		<input type="date" class="aui-input" name="e_date" validate="required" errorMsg="请选择结束日期" />
+	</div>
+	<div class="aui-input-row time">
+		<label class="aui-input-addon">结束时间：</label>
+		<input type="time" class="aui-input" name="e_time" validate="relyon" relyon="allDay" errorMsg="请选择开始时间" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">计划人员：</label>
+		<input type="text" class="aui-input" name="createUser" validate="required" errorMsg="计划人员不能为空" />
+	</div>
+	<div class="aui-input-row">
+		<label class="aui-input-addon">执行人员：</label>
+		<input type="text" class="aui-input" name="executor" validate="required" errorMsg="执行人员不能为空" />
+	</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript" src="../../script/com/date.js"></script>
+<script type="text/javascript" src="../../script/com/form.js"></script>
+<script type="text/javascript">
+// 页面就绪事件
+window.apiready = function() {
+	// 判定是编辑还是添加
+	var params = api.pageParam;
+	var action = params.action;
+	action || (action = "add");
+	
+	// 构建表单初始化数据
+	var formData = {};
+	var startDate, endDate;
+	if ("edit" == action) {
+		formData.id = params.id;
+		formData.level = params.level;
+		formData.title = params.title;
+		formData.allDay = params.allDay;
+		formData.createUser = params.createUser;
+		formData.executor = params.executor;
+		
+		// 获取参数时间
+		startDate = new Date(params.startDate);
+		endDate = new Date(params.startDate);
+		
+	} else if ("add" == action) {
+		// 时间格式转换
+		startDate = new Date();
+		endDate = $date.getNextDate(1);
+	}
+	
+	// 设定时间默认值
+	var dateStr_now = $date.getDateAndTimeStr("yyyy-MM-dd@hh:mm", "@", startDate);
+	var dateStr_next = $date.getDateAndTimeStr("yyyy-MM-dd@hh:mm", "@", endDate);
+	formData.s_date = dateStr_now["dateStr"];
+	formData.s_time = dateStr_now["timeStr"];
+	formData.e_date = dateStr_next["dateStr"];
+	formData.e_time = dateStr_next["timeStr"];
+	
+	// 设定表单数据
+	$form.setFormData(formData);
+};
+
+// 是否全天切换
+var typeChange = function (el) {
+	var checked = el.checked;
+	
+	var cssVal = "display:''";
+	if (checked) {
+		cssVal = "display:none";
+	}
+	var timeDiv = $api.domAll("div.time");
+	for (var idx in timeDiv) {
+		timeDiv[idx].style = cssVal;
+	}
+};
+
+// 添加日程操作
+var toAddCalendar = function() {
+	// Form 表单验证
+	var errorMsg = $form.validateForm("input");
+	if (errorMsg) {
+		api.toast({
+	        "msg" : errorMsg
+        });
+		return;
+	}
+	
+	// 将表单数据封装为云存储格式
+	var formData = $form.getFormData();
+	var calendarData = getCalendarData(formData);
+	
+	//	add to database
+	var model = api.require('model');
+	api.showProgress({
+		title : "正在保存..."
+	});
+	model.insert({
+		"class" : 'calendar',
+		"value" : calendarData
+	}, function(ret, err) {
+		api.hideProgress();
+		if (err) {
+			api.toast({"msg":JSON.stringify(err)});
+			return;
+		}
+		api.confirm({
+			title : '提示',
+			msg : "添加成功：" + JSON.stringify(ret),
+			buttons : ['返回', '继续添加']
+		}, function(ret, err) {
+			if (ret.buttonIndex == 1) {
+				api.closeWin();
+			}
+		});
+	});
+};
+
+// 格式化表单数据为日程数据
+var getCalendarData = function(formData) {
+	var allDay = formData["allDay"];
+	var calData = {
+		allDay : allDay,
+		title : formData["title"],
+		level : formData["level"],
+		createUser : formData["createUser"],
+		executor : formData["executor"]
+	};
+	if (allDay) {
+		calData.startDate = formData["s_date"] + " 00:00:00";
+		calData.endDate = formData["e_date"] + " 00:00:00";
+	} else {
+		var s_time = formData["s_time"];
+		if (!s_time) {
+			s_time = "08:00";
+		}
+		var e_time = formData["e_time"];
+		if (!e_time) {
+			e_time = "20:00";
+		}
+		calData.startDate = formData["s_date"] + " " + s_time + ":00";
+		calData.endDate = formData["e_date"] + " " + e_time + ":00";
+	}
+	return calData;
+};
+</script>
+</html>

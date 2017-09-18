@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>注册</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui-win.css" />
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+		<a class="aui-pull-left" onclick="api.closeWin();">
+			<span class="aui-iconfont aui-icon-left"></span>
+		</a>
+		<div class="aui-title">注册帐号</div>
+	</header>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js" ></script>
+<script type="text/javascript">
+window.apiready = function() {
+	// 设定状态栏Padding
+	var header = $api.byId('aui-header');
+	$api.fixStatusBar(header);
+    
+    // 点击延迟消除
+	api.parseTapmode();
+	
+	// 打开主页
+	var headerPos = $api.offset(header);
+	api.openFrameGroup({
+		name: 'register_frame',
+		scrollEnabled: false,
+		rect: {
+			x: 0, y: headerPos.h, w: 'auto', h: 'auto'
+		},
+		frames:[{
+			name: "register_frame_1",
+			url: 'widget://html/user/register_account.html',
+		},{
+			name: "register_frame_2",
+			url: 'widget://html/user/register_info.html',
+		}]
+    },function(ret, err){
+    	
+    });
+}; 
+</script>
+</html>

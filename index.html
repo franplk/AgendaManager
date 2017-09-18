@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>首页</title>
+	<link rel="stylesheet" type="text/css" href="./aui/css/aui-win.css"/>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+		<div class="aui-title">首页</div>
+		<a class="aui-pull-right" tapmode onclick="exitLogin()">
+			<span class="aui-iconfont aui-icon-backdelete"></span>
+		</a>
+	</header>
+</body>
+<script type="text/javascript" src="./aui/script/api.js"></script>
+<script type="text/javascript" src="./script/com/dbconfig.js"></script>
+<script type="text/javascript">
+var keyBackTime = 0;
+window.apiready = function () {
+	/*
+	 * 测试环境下，非云编译下
+	 * 首次进入进行数据库配置
+	 * */ 
+	var debug = api.debug;
+	if (debug) {
+		initConfig();
+	}
+	
+	// 是否登陆判定
+	var username = api.pageParam.username;
+	if (!username) {
+		toLoginPage();
+        return;
+	}
+	
+	// 设定状态栏Padding
+	var header = $api.byId('aui-header');
+	$api.fixStatusBar(header);
+    
+    // 点击延迟消除
+	api.parseTapmode();
+	
+	// 打开主页
+	var headerPos = $api.offset(header);
+	api.openFrame({
+		name: 'main',
+		url: 'widget://html/main.html',
+		bounces: true,
+		rect: {
+			x: 0, y: headerPos.h, w: 'auto', h: 'auto'
+		},
+		pageParam: api.pageParam
+	});
+	
+    // Android 返回键---双击退出应用
+    api.addEventListener({
+        name:'keyback'
+    }, function(ret,err) {
+    	keyBackTime += 1;
+    	if (keyBackTime == 2) {
+    		api.closeWidget({
+                id: api.appId
+            });
+            return;
+    	}
+    	api.toast({msg:'再点击一次退出应用'});
+		window.setTimeout(function(){
+			keyBackTime = 0;
+		}, 3000);
+    });
+};
+
+var exitLogin = function () {
+	api.confirm({
+		title : '警告',
+		msg : "确定退出？",
+		buttons : ['确定', '取消']
+	}, function(ret, err) {
+		if (ret.buttonIndex == 2) {
+			return;
+		}
+		toLoginPage();
+	});
+};
+
+var toLoginPage = function () {
+	api.openWin({
+        name: 'login',
+        reload : true,
+        url: 'widget://html/login.html'
+    });
+};
+</script>
+</html>

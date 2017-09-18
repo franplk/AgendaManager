@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
+	<meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui-win.css" />
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav aui-bar-primary" id="aui-header">
+		<a class="aui-pull-left" onclick="api.closeWin();">
+			<span class="aui-iconfont aui-icon-left"></span>
+		</a>
+		<div class="aui-title" id="calendarMonth">设备信息</div>
+	</header>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript">
+// 就绪事件
+window.apiready = function() {
+	// 状态栏
+	var header = $api.byId("aui-header");
+	$api.fixStatusBar(header);
+    
+    // 点击延迟消除
+	api.parseTapmode();
+	
+	// 打开主页
+	var headerPos = $api.offset(header);
+	api.openFrame({
+		name: 'device_frm',
+		url: 'widget://html/device/index_frame.html',
+		bounces: true,
+		rect: {
+			x: 0, y: headerPos.h, w: 'auto', h: 'auto'
+		},
+		pageParam: api.pageParam
+	});
+};
+</script>
+</html>

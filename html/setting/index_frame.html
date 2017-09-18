@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>设置</title>
+	<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css"/>
+	<style>
+		.aui-btn-block {
+			padding:5px 0; border-radius:20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="aui-content">
+		<ul class="aui-list-view">
+			<li class="aui-list-view-cell" tapmode onclick="toLogin()">
+				<a class="aui-arrow-right">去登陆</a>
+			</li>
+		</ul>
+		<ul class="aui-list-view">
+			<li class="aui-list-view-cell" tapmode onclick="toModule('device')">
+				<a class="aui-arrow-right">设备信息</a>
+			</li>
+			<li class="aui-list-view-cell" tapmode onclick="clearCache()">
+				<a class="aui-arrow-right">缓存清理</a>
+			</li>
+		</ul>
+	</div>
+	<div class="aui-login">
+		<div class="aui-btn aui-btn-primary aui-btn-block" tapmode onclick="clearLogin()">
+			退出登录
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../aui/script/api.js"></script>
+<script type="text/javascript">
+// 就绪事件
+window.apiready = function() {
+	api.parseTapmode();
+};
+
+// 模块跳转
+var toModule = function(moduleName) {
+	var modelUrl = "widget://html/" + moduleName + "/index.html";
+	api.openWin({
+		url : modelUrl,
+		name : moduleName
+	});
+};
+
+// 跳转登录页面
+var toLogin = function () {
+	api.openWin({
+	    name: 'login',
+	    url: 'widget://html/login.html'
+    });
+};
+
+// 清理缓存
+var clearCache = function () {
+	api.showProgress({
+		title: "正在清理"
+    });
+	api.clearCache({
+    },function(ret,err){
+    	api.hideProgress();
+    	if (err) {
+    		api.toast({
+	            msg:'清理失败'
+            });
+            return;
+    	}
+    	api.toast({
+	        msg:'清理成功'
+        });
+    });
+};
+
+// 退出登录,删除登录信息
+var clearLogin = function () {
+	var userModel = api.require('user');
+	userModel.logout(function(ret,err){
+		if (err) {
+			api.toast({
+	            msg:'注销失败'
+            });
+            return;
+		}
+		// Delete Login Info
+		api.removePrefs({
+		    key:'loginInfo'
+	    });
+	    // Open Login View
+		api.openWin({
+	        name: 'login',
+	        reload: true,
+	        url: 'widget://html/login.html'
+	    });
+    });
+};
+</script>
+</html>

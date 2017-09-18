@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>跨域测试</title>
+		<link rel="stylesheet" type="text/css" href="../../aui/css/aui.css"/>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav aui-bar-primary">
+			<a class="aui-pull-left" onclick="api.closeWin();"> <span class="aui-iconfont aui-icon-left"></span> </a>
+			<div class="aui-title" id="calendarMonth">
+				跨域接口测试
+			</div>
+		</header>
+		<p class="aui-text-center">
+			API接口列表
+		</p>
+		<div class="aui-content">
+			<ul class="aui-list-view aui-in">
+				<li class="aui-list-view-cell" onclick="apiRequest('http://www.weather.com.cn/data/sk/101010100.html', 'get')">
+					<i class="aui-iconfont aui-icon-edit aui-bg-info"></i>天气预报-北京
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../aui/script/api.js"></script>
+	<script type="text/javascript">
+		window.apiready = function() {
+			// 状态栏
+			var header = $api.dom('header', '.aui-bar-nav');
+			$api.fixStatusBar(header);
+			
+			var db = api.require('db');
+//			db.
+		};
+		var apiRequest = function(url, method) {
+			method || ( method = 'get');
+			api.showProgress({
+            });
+			api.ajax({
+				url : url,
+				method : method,
+				tag : "apiRequest"
+			}, function(ret, err) {
+				if (ret) {
+					api.alert({
+						title : '请求成功',
+						msg : JSON.stringify(ret),
+					}, function(ret, err) {
+					});
+				} else {
+					api.alert({
+						title : '请求失败',
+						msg : JSON.stringify(err)
+					});
+				}
+				api.hideProgress();
+			});
+		}
+	</script>
+</html>
